@@ -18,7 +18,7 @@ def getPictureUrl(url):
             s = s[s.find('/'):]
             return url + s
         else:
-            raise
+            raise Exception("*** couldn't find picture url in page!")
 
 
 def getPicture(url):
@@ -46,5 +46,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except:
-        print("oops!")
+    except Exception as e:
+        print("oops! ==> ", e.args)
