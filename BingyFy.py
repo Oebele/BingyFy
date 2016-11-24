@@ -7,6 +7,7 @@ from urllib.request import urlopen
 from re import findall, sub
 import os
 import time
+import platform
 
 
 def getPictureUrl(url):
@@ -45,7 +46,10 @@ def deleteOldPictures(picture_path):
 
 def main():
     url = "http://bing.com"
-    cmd = "gsettings set org.gnome.desktop.background picture-uri 'file:///{}'"
+    if platform.linux_distribution()[0] == 'Ubuntu':
+        cmd = "gsettings set org.gnome.desktop.background picture-uri 'file:///{}'"
+    elif platform.linux_distribution()[0] == 'LinuxMint':
+        cmd = "gsettings set org.cinnamon.desktop.background picture-uri 'file:///{}'"
     picture_path = os.environ["HOME"] + os.sep + '/Bing Pictures/'
     picture_url = getPictureUrl(url)
     picture_name = createPictureName(picture_path, picture_url)
