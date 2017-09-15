@@ -1,8 +1,8 @@
-'''
+"""
 Created on Nov 24, 2016
 
 @author: oebele
-'''
+"""
 from urllib.request import urlopen
 from re import findall, sub
 import os
@@ -34,8 +34,7 @@ def createPictureName(directory, url):
 
 def deleteOldPictures(picture_path):
     current_time = time.time()
-    
-    
+
     for f in os.listdir(picture_path):
         path = picture_path + '/' + f
         creation_time = os.path.getctime(path)
@@ -44,22 +43,28 @@ def deleteOldPictures(picture_path):
             os.unlink(path)
             print('{} removed'.format(f))
 
+
 def main():
     url = "http://bing.com"
-    if platform.linux_distribution()[0] == 'Ubuntu':
-        cmd = "gsettings set org.gnome.desktop.background picture-uri 'file:///{}'"
-    elif platform.linux_distribution()[0] == 'LinuxMint':
-        cmd = "gsettings set org.cinnamon.desktop.background picture-uri 'file:///{}'"
+    cmds = [
+        "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image -s '{}'",
+        # only this one is necessary
+        # "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/image-path -s '{}'",
+        # "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/last-image -s '{}'",
+        # "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/last-single-image -s '{}'",
+    ]
     picture_path = os.environ["HOME"] + os.sep + '/Bing Pictures/'
     picture_url = getPictureUrl(url)
     picture_name = createPictureName(picture_path, picture_url)
     deleteOldPictures(picture_path)
     picture = getPicture(picture_url)
-    command = cmd.format(picture_name)
+    commands = (cmd.format(picture_name) for cmd in cmds)
 
     with open(picture_name, 'wb+') as f:
         f.write(picture)
-    os.system(command)
+    for command in commands:
+        os.system(command)
+
 
 if __name__ == "__main__":
     try:
