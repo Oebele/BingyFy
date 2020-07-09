@@ -14,11 +14,10 @@ def getPictureUrl(url):
     # https://www.bing.com/th?id=OHR.ValGardena_ROW3578236407_1920x1080.jpg&rf=LaDigue_1920x1080.jpg
     with urlopen(url) as page:
         htmlPage = page.read()
-        res = findall(r'style="background-image: url\(/th\?id=OHR.\w*.jpg', str(htmlPage))
-        if len(res):
-            s = res[0]
-            s = s.split('url(')[1]
-            return f"{url}{s}"
+        res = findall(r'/th\?id=OHR.\w*.jpg', str(htmlPage))
+        for s in res:
+            if '_tmb' not in s:
+                return f"{url}{s}"
         raise Exception("*** couldn't find picture url in page!")
  
 
@@ -29,8 +28,7 @@ def getPicture(url):
 
 def createPictureName(directory, url):
     start = url.find('?id=')
-    stop = url.find('&amp')
-    file_name = url[start + 4: stop]
+    file_name = url[start + 4:]
     return directory + file_name
 
 
